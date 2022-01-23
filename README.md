@@ -1,1 +1,3 @@
 # oyunaimbot
+
+Kod bloğu pytorch kütüphanesini kullanarak eğitilmiş model üzerinden adam tespiti yapıp oyunda mouse imlecini rakibin kafasına getirerek ateş etmektedir. Kodun çalışması için nvidia ekran kartınız olmalı yolov5 repositorysini bilgisaarınıza klonlamanız (çalıştıracağınız .py dosyası ile aynı konumda olmalı), diğer import edilen kütüphaneleri kurmalısınız. Oyununuzu ve cmd panelinizi yönetici modunda çalıştırmalısınız. Oyun window modunda açılmalı. Her oyunda çalışmamaktadır...
