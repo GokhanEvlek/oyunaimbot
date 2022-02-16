@@ -3,58 +3,24 @@ from PIL import ImageGrab
 import cv2 as cv
 import numpy as np
 import os
-import pyautogui
-from pynput.mouse import Button, Controller
-import win32api, win32con
+import win32api, win32con, win32gui
 import ctypes
-import pydirectinput
 import time
 #model=torch.hub.load('ultralytics/yolov5','custom','C:\\Users\\Gökhan\\PycharmProjects\\oyunaimbot\\yolov5\\aimbotairlik.pt',force_reload=True)
 model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
 classes=model.names
-mouse=Controller()
-PUL = ctypes.POINTER(ctypes.c_ulong)
-class KeyBdInput(ctypes.Structure):
-    _fields_ = [("wVk", ctypes.c_ushort),
-                ("wScan", ctypes.c_ushort),
-                ("dwFlags", ctypes.c_ulong),
-                ("time", ctypes.c_ulong),
-                ("dwExtraInfo", PUL)]
-
-class HardwareInput(ctypes.Structure):
-    _fields_ = [("uMsg", ctypes.c_ulong),
-                ("wParamL", ctypes.c_short),
-                ("wParamH", ctypes.c_ushort)]
-
-class MouseInput(ctypes.Structure):
-    _fields_ = [("dx", ctypes.c_long),
-                ("dy", ctypes.c_long),
-                ("mouseData", ctypes.c_ulong),
-                ("dwFlags", ctypes.c_ulong),
-                ("time",ctypes.c_ulong),
-                ("dwExtraInfo", PUL)]
-
-class Input_I(ctypes.Union):
-    _fields_ = [("ki", KeyBdInput),
-                 ("mi", MouseInput),
-                 ("hi", HardwareInput)]
-
-class Input(ctypes.Structure):
-    _fields_ = [("type", ctypes.c_ulong),
-                ("ii", Input_I)]
-
-# Actuals Functions
-def MouseMoveTo(x, y):
-    x = 1 + int(x * 65536./1920.)#1920 width of your desktop
-    y = 1 + int(y * 65536./1080.)#1080 height of your desktop
-    extra = ctypes.c_ulong(0)
-    ii_ = Input_I()
-    ii_.mi =  MouseInput(x,y,0, (0x0001 | 0x8000), 0, ctypes.pointer(extra) )
-    x = Input( ctypes.c_ulong(0), ii_ )
-    ctypes.windll.user32.SendInput(1, ctypes.pointer(x), ctypes.sizeof(x))
+size_scale = 3
 while True:
-    img = ImageGrab.grab()  # take a screenshot
+    img = ImageGrab.grab(bbox =(559, 254, 1358, 851)) # take a screenshot
+    #img = ImageGrab.grab(bbox =(36, 25, 1889, 1037))
+    #hwnd = win32gui.FindWindow(None, 'Counter-Strike: Global Offensive')
+    #hwnd = win32gui.FindWindow("UnrealWindow", None) # Fortnite
+    #rect = win32gui.GetWindowRect(hwnd)
+    #region = rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1]
 
+    # Get image of screen
+    #img = np.array(pyautogui.screenshot(region=region))
+    #img_w, img_h = img.shape[1], img.shape[0]
     img=np.array(img)
     img=cv.cvtColor(img,cv.COLOR_RGB2BGR)
     cv.imwrite("image1.png", img)
@@ -66,7 +32,7 @@ while True:
     labels, cord = results.xyxyn[0][:, -1], results.xyxyn[0][:, :-1]
 
     n = len(labels)
-
+    keys = Keys()
     img = cv.imread("image1.png")
     #print(labels)
     x_shape = img.shape[1]
@@ -84,8 +50,24 @@ while True:
 
                 img=cv.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
                 img=cv.putText(img, sınıf, (x1, y1), cv.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
+                x=int((x1+x2)/2-x_shape/2)
+                y =int(y1+20 - y_shape/2)
                 ourcordsx=(x1+x2)/2
                 ourcordsy=y1
+                #keys.directMouse(-1*int((x_shape/2)-ourcordsx), -1*int((y_shape/2)-ourcordsy))
+                #keys.directMouse(buttons=keys.mouse_lb_press)
+                #keys.directMouse(buttons=keys.mouse_lb_release)
+                scale = 2.5
+                #x = int(((x_shape/2)-ourcordsx)*scale)
+                #y = int(((y_shape/2)-ourcordsy)*scale)
+                x=int(x*scale)
+                y=int(y*scale)
+                win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, x, y, 0, 0)
+                time.sleep(0.05)
+                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0)
+                time.sleep(0.1)
+                win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, x, y, 0, 0)
+                time.sleep(0.05)
                 #pyautogui.moveTo(ourcordsx,ourcordsy,0)
                 #MouseMoveTo(ourcordsx,ourcordsy)
                 #mouse.position=(ourcordsx,ourcordsy)
@@ -94,9 +76,9 @@ while True:
                 #pydirectinput.keyDown('w')
                 #time.sleep(1)
                 #pydirectinput.keyUp('w')
-                convertedX = 65536 * ourcordsx // x_shape + 1
-                convertedY = 65536 * ourcordsy // y_shape + 1
-                MouseMoveTo(int(ourcordsx),int(ourcordsy))
+                #convertedX = 65536 * ourcordsx // x_shape + 1
+                #convertedY = 65536 * ourcordsy // y_shape + 1
+                #MouseMoveTo(int(ourcordsx),int(ourcordsy))
                 #pydirectinput.keyDown('w')
                 #time.sleep(1)
                 #pydirectinput.keyUp('w')
@@ -105,12 +87,14 @@ while True:
                 print("hareket fn'u çalıştı")
                 #ctypes.windll.user32.mouse_event(ev, ctypes.c_long(convertedX), ctypes.c_long(convertedY), dwData, 0)
                 #win32api.mouse_event(win32con.MOUSEEVENTF_MOVE | win32con.MOUSEEVENTF_ABSOLUTE, int(convertedX),int(convertedY),0,0)
-                pydirectinput.click()
+                #pydirectinput.click()
         else:
             continue
-    #cv.imshow("adam", img)
-    #k=cv.waitKey(1)
+    cv.imshow("adam", img)
+    k=cv.waitKey(1)
     os.remove("image1.png")
-    #if k==27:
-        #cv.destroyAllWindows()
-        #break
+    if k==27:
+        cv.destroyAllWindows()
+        break
+
+
