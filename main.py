@@ -32,7 +32,6 @@ while True:
     labels, cord = results.xyxyn[0][:, -1], results.xyxyn[0][:, :-1]
 
     n = len(labels)
-    keys = Keys()
     img = cv.imread("image1.png")
     #print(labels)
     x_shape = img.shape[1]
@@ -51,7 +50,7 @@ while True:
                 img=cv.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
                 img=cv.putText(img, sınıf, (x1, y1), cv.FONT_HERSHEY_SIMPLEX, 0.9, (255,0,0), 2)
                 x=int((x1+x2)/2-x_shape/2)
-                y =int(y1+20 - y_shape/2)
+                y =int(y1+10 - y_shape/2)
                 ourcordsx=(x1+x2)/2
                 ourcordsy=y1
                 #keys.directMouse(-1*int((x_shape/2)-ourcordsx), -1*int((y_shape/2)-ourcordsy))
@@ -96,5 +95,3 @@ while True:
     if k==27:
         cv.destroyAllWindows()
         break
-
-
